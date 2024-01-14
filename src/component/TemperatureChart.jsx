@@ -55,7 +55,7 @@ const TemperatureChart = (props) => {
   }, [curDay]);
 
   return (
-    <div className="temp-chart">
+    <div className="temp-chart" style={{ width: "100%" }}>
       {chartData && (
         <Chart
           options={chartData.options}
