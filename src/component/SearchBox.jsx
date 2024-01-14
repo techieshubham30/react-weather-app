@@ -5,15 +5,6 @@ import { indianCities } from "../utils/config";
 import { WeatherContext } from "../context/WeatherContext";
 import Paper from "@mui/material";
 
-const CustomOption = ({ city, temperature }) => (
-  <div>
-    <span>{city}</span>
-    <span style={{ marginLeft: "0.5rem" }}>{`${Math.ceil(
-      temperature
-    )}°C`}</span>
-  </div>
-);
-
 const SearchBox = () => {
   const [value, setValue] = useState(null);
   const [inputValue, setInputValue] = useState("");
@@ -87,9 +78,6 @@ const SearchBox = () => {
         sx={{
           width: "100%",
         }}
-        renderOption={(props, option) => (
-          <CustomOption city={option.name} temperature="45cel" />
-        )}
         renderInput={(params) => (
           <TextField
             {...params}
