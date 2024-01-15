@@ -9,11 +9,60 @@ const SearchBox = () => {
   const [value, setValue] = useState(null);
   const [inputValue, setInputValue] = useState("");
   const [weatherData, setWeatherData] = useState(null);
+  const [locationError, setLocationError] = useState(null);
 
   const { weather, setWeather } = useContext(WeatherContext);
 
   const options = indianCities; // Using JSON data for the options
   console.log(weather);
+
+  useEffect(() => {
+    // Function to get user's current location
+    const getCurrentLocation = () => {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+
+          const apiUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=b3cf598232766b83289fe982d2dba7ed`;
+
+          fetch(apiUrl)
+            .then((response) => {
+              if (!response.ok) {
+                throw new Error("Network response was not ok");
+              }
+              return response.json();
+            })
+            .then((data) => {
+              console.log(data);
+              const cityName = data.name || "Unknown City";
+
+              setValue({ name: cityName });
+              setInputValue(cityName);
+            })
+            .catch((error) => {
+              console.error("Error fetching OpenWeatherMap data:", error);
+              setLocationError(
+                "Error getting location. Please search manually."
+              );
+            });
+        },
+        (error) => {
+          console.error("Error getting user's location:", error);
+          setLocationError("Error getting location. Please search manually.");
+        }
+      );
+    };
+
+    // Ask for location rights when the component mounts
+    if (navigator.geolocation) {
+      getCurrentLocation();
+    } else {
+      console.error("Geolocation is not supported by your browser");
+      setLocationError(
+        "Geolocation is not supported by your browser. Please search manually."
+      );
+    }
+  }, []);
 
   useEffect(() => {
     // Fetch weather data when the selected value changes
