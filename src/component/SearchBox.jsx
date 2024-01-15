@@ -1,20 +1,35 @@
 import { useContext, useEffect, useState } from "react";
-import { Autocomplete, TextField } from "@mui/material";
+import { Autocomplete, TextField, CircularProgress } from "@mui/material";
 import { Place, Search } from "@mui/icons-material";
 import { indianCities } from "../utils/config";
 import { WeatherContext } from "../context/WeatherContext";
 import Paper from "@mui/material";
+
+const Loader = () => {
+  return (
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        height: "100vh", // Adjust the height to your preference
+      }}
+    >
+      <CircularProgress />
+    </div>
+  );
+};
 
 const SearchBox = () => {
   const [value, setValue] = useState(null);
   const [inputValue, setInputValue] = useState("");
   const [weatherData, setWeatherData] = useState(null);
   const [locationError, setLocationError] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   const { weather, setWeather } = useContext(WeatherContext);
 
   const options = indianCities; // Using JSON data for the options
-  console.log(weather);
 
   useEffect(() => {
     // Function to get user's current location
@@ -33,11 +48,11 @@ const SearchBox = () => {
               return response.json();
             })
             .then((data) => {
-              console.log(data);
               const cityName = data.name || "Unknown City";
 
               setValue({ name: cityName });
               setInputValue(cityName);
+              setLoading(false);
             })
             .catch((error) => {
               console.error("Error fetching OpenWeatherMap data:", error);
@@ -49,6 +64,7 @@ const SearchBox = () => {
         (error) => {
           console.error("Error getting user's location:", error);
           setLocationError("Error getting location. Please search manually.");
+          setLoading(false);
         }
       );
     };
@@ -61,6 +77,7 @@ const SearchBox = () => {
       setLocationError(
         "Geolocation is not supported by your browser. Please search manually."
       );
+      setLoading(false);
     }
   }, []);
 
@@ -77,7 +94,6 @@ const SearchBox = () => {
           return response.json();
         })
         .then((data) => {
-          //   console.log(data);
           setWeatherData(data);
           setWeather({
             ...weather,
@@ -90,8 +106,6 @@ const SearchBox = () => {
                 index === 0 || day.dt_txt !== array[index - 1].dt_txt;
 
               if (isDifferentDay) {
-                // console.log(day.dt_txt);
-
                 acc.push({
                   dt_txt: day.dt_txt,
                   temp_min: day.main.temp_min,
@@ -112,8 +126,6 @@ const SearchBox = () => {
                 currentDay !== array[index - 1].dt_txt.split(" ")[0];
 
               if (isDifferentDay) {
-                // console.log(currentDay);
-
                 acc.push({
                   dt_txt: currentDay,
                   temp_min: day.main.temp_min,
@@ -136,34 +148,38 @@ const SearchBox = () => {
 
   return (
     <div>
-      <Autocomplete
-        value={value}
-        onChange={(event, newValue) => {
-          setValue(newValue);
-        }}
-        inputValue={inputValue}
-        onInputChange={(event, newInputValue) => {
-          setInputValue(newInputValue);
-        }}
-        id="city-search-autocomplete"
-        options={options}
-        getOptionLabel={(option) => option.name}
-        sx={{
-          width: "100%",
-        }}
-        renderInput={(params) => (
-          <TextField
-            {...params}
-            variant="outlined"
-            placeholder="Search"
-            InputProps={{
-              ...params.InputProps,
-              endAdornment: <Search fontSize="small" />,
-              startAdornment: <Place fontSize="small" />,
-            }}
-          />
-        )}
-      />
+      {loading && <Loader />}{" "}
+      {
+        <Autocomplete
+          style={{ visibility: loading ? "hidden" : "visible" }}
+          value={value}
+          onChange={(event, newValue) => {
+            setValue(newValue);
+          }}
+          inputValue={inputValue}
+          onInputChange={(event, newInputValue) => {
+            setInputValue(newInputValue);
+          }}
+          id="city-search-autocomplete"
+          options={options}
+          getOptionLabel={(option) => option.name}
+          sx={{
+            width: "100%",
+          }}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              variant="outlined"
+              placeholder="Search"
+              InputProps={{
+                ...params.InputProps,
+                endAdornment: <Search fontSize="small" />,
+                startAdornment: <Place fontSize="small" />,
+              }}
+            />
+          )}
+        />
+      }
     </div>
   );
 };

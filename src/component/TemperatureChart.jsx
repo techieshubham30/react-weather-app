@@ -9,7 +9,6 @@ const TemperatureChart = (props) => {
 
   useEffect(() => {
     // Update the chart series when temperature data changes
-    // console.log(props.hourlyWeatherData);
     if (props.hourlyWeatherData.length > 0) {
       const categories = props.hourlyWeatherData.map((data) =>
         data.dt_txt.split(" ")[1].slice(0, 5)
