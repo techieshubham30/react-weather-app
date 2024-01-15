@@ -40,7 +40,7 @@ const WeatherTabs = () => {
           indicatorColor: "none",
         }}
       >
-        {weather?.days?.map((day, index) => (
+        {weather?.everyDay?.map((day, index) => (
           <Tab
             key={index}
             label={

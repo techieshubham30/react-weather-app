@@ -1,5 +1,6 @@
 import { useEffect, useState, useContext } from "react";
 import { WeatherContext } from "../context/WeatherContext";
+import { kelvinToCelsius } from "../utils/kelvinToCelsius";
 import Chart from "react-apexcharts";
 const TemperatureChart = (props) => {
   const { curDay } = props.currentDay;
@@ -15,10 +16,10 @@ const TemperatureChart = (props) => {
       );
 
       const minTemperatures = props.hourlyWeatherData.map((data) =>
-        Math.ceil(data.temp_min)
+        Math.ceil(kelvinToCelsius(data.temp_min))
       );
       const maxTemperatures = props.hourlyWeatherData.map((data) =>
-        Math.ceil(data.temp_max)
+        Math.ceil(kelvinToCelsius(data.temp_max))
       );
 
       setChartData({
@@ -26,6 +27,7 @@ const TemperatureChart = (props) => {
           chart: {
             id: "temperature-chart",
             height: 350,
+            width: "100%",
             type: "line",
             zoom: {
               enabled: false,
@@ -41,6 +43,9 @@ const TemperatureChart = (props) => {
           labels: categories,
           markers: {
             size: 0,
+          },
+          yaxis: {
+            show: false, // Hide Y-axis numbers
           },
         },
         series: [
@@ -61,7 +66,6 @@ const TemperatureChart = (props) => {
           options={chartData.options}
           series={chartData.series}
           type="line"
-          width="500"
         />
       )}
     </div>

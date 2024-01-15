@@ -77,7 +77,7 @@ const SearchBox = () => {
           return response.json();
         })
         .then((data) => {
-          console.log(data);
+          //   console.log(data);
           setWeatherData(data);
           setWeather({
             ...weather,
@@ -90,8 +90,32 @@ const SearchBox = () => {
                 index === 0 || day.dt_txt !== array[index - 1].dt_txt;
 
               if (isDifferentDay) {
+                // console.log(day.dt_txt);
+
                 acc.push({
                   dt_txt: day.dt_txt,
+                  temp_min: day.main.temp_min,
+                  temp_max: day.main.temp_max,
+                  weather: day.weather[0].main,
+                  pressure: day.main.pressure,
+                  humidity: day.main.humidity,
+                });
+              }
+
+              return acc;
+            }, []),
+            everyDay: data.list.reduce((acc, day, index, array) => {
+              const currentDay = day.dt_txt.split(" ")[0]; // Extract date part
+
+              const isDifferentDay =
+                index === 0 ||
+                currentDay !== array[index - 1].dt_txt.split(" ")[0];
+
+              if (isDifferentDay) {
+                // console.log(currentDay);
+
+                acc.push({
+                  dt_txt: currentDay,
                   temp_min: day.main.temp_min,
                   temp_max: day.main.temp_max,
                   weather: day.weather[0].main,
