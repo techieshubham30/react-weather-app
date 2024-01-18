@@ -33,7 +33,7 @@ const TemperatureChart = (props) => {
             },
           },
           stroke: {
-            curve: "straight",
+            curve: "smooth",
           },
           fill: {
             type: "solid",
